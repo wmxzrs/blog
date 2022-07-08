@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 5.4.0">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <title>Github Action - Tokiame's blog</title>
+
+  
+    <meta name="description" content="博客过于依赖本地环境，测试github action自动部署成功了，之后只需要更改source下的文件就可以自动部署了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Github Action">
+<meta property="og:url" content="https://vitadaemon.com/posts/e05fd2da/index.html">
+<meta property="og:site_name" content="Tokiame&#39;s blog">
+<meta property="og:description" content="博客过于依赖本地环境，测试github action自动部署成功了，之后只需要更改source下的文件就可以自动部署了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202111141734160.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202111141736193.png">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f339.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f440.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/1f4d6.png?v8">
+<meta property="article:published_time" content="2021-11-14T13:53:12.000Z">
+<meta property="article:modified_time" content="2022-07-08T22:47:34.150Z">
+<meta property="article:author" content="Tokiame">
+<meta property="article:tag" content="Record">
+<meta property="article:tag" content="workflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202111141734160.png">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/blog/css/main.css">
+
+  
+
+  
+
+  
+
+
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+
+<script type="text/javascript">
+  var OriginTitile = document.title,
+      st;
+  document.addEventListener("visibilitychange", function () {
+      document.hidden ? (document.title = "/(ㄒoㄒ)/~~", clearTimeout(st)) : (document.title =
+          "(●'◡'●)", st = setTimeout(function () {
+              document.title = OriginTitile
+          }, 3e3))
+  })
+
+
+ 
+</script>
+
+
+      
+
+<body>
+  <div%- partial('_partial/main/article/wiki_cover') 
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+
+      
+   
+    
+
+
+<header class="header">
+
+<div class="logo-wrap"><a class="avatar" href="/blog/about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202111201724785.png" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="/blog/"><div class="main">tokiame</div></a></div>
+<nav class="menu dis-select"><a class="nav-item" href="https://vitadaemon.com/">主页</a><a class="nav-item" href="/blog/">文章</a><a class="nav-item" href="/blog/set/">集</a><a class="nav-item" href="/blog/sources/">资源</a><a class="nav-item" href="/blog/schedule/">to-dos</a><a class="nav-item" href="/blog/albums/">albums</a></nav></header>
+
+<div class="widgets">
+
+<div class="widget-wrap single" id="toc"><div class="widget-header cap dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Github-workflow"><span class="toc-text">Github workflow</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="toc-text">我的配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#rose-%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-text">🌹流程图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#eyes-%E5%90%AB%E4%B9%89%E5%92%8C%E6%B3%A8%E9%87%8A"><span class="toc-text">👀含义和注释</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-text">要注意的地方</span></a></li></ol></div></div></div>
+
+
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/wmxzrs" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.3/social/08a41b181ce68.svg"/></a><a class="social" href="http://music.163.com/playlist?id=6925235544&userid=437298376" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.3/social/3845874.svg"/></a></div></footer>
+
+
+
+    
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/blog/">Tokiame's blog</a><span class="sep"></span><a class="cap breadcrumb" href="/blog/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/blog/categories/github-action/">github action</a></div><div id="post-meta">发布于&nbsp;<time datetime="2021-11-14T13:53:12.000Z">2021-11-14</time></div></div>
+
+<article class='content md post reveal'>
+<h1 class="article-title"><span>Github Action</span></h1>
+<h2 id="Github-workflow"><a href="#Github-workflow" class="headerlink" title="Github workflow"></a>Github workflow</h2><p><em><strong>这个真的是太香了，github官方集成CI/CD工作流，自动化部署流程。我目前只用它部署了博客。</strong></em></p>
+<p>⨠ Action 在存储库中<code>.github/workflows</code>下创建新的<code>yml</code>文件</p>
+<p>可以自己创建，也可以使用模板</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202111141734160.png" alt="alt"></p>
+<p>这里选择自己创建的</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202111141736193.png" alt="alt"></p>
+<p><em><strong>右侧是他人封装的通用的模块和github action文档，可以使用<code>uses: &lt;module&gt;调用</code></strong></em></p>
+<h2 id="我的配置"><a href="#我的配置" class="headerlink" title="我的配置"></a>我的配置</h2><figure class="highlight yml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">auto</span> <span class="string">deploy</span></span><br><span class="line"><span class="attr">env:</span> </span><br><span class="line">   <span class="attr">GITHUB_USER:</span> <span class="string">wmxzrs</span></span><br><span class="line">   <span class="attr">GITHUB_REPO:</span> <span class="string">github.com/wmxzrs/blog</span></span><br><span class="line">   <span class="attr">THEME_REPO:</span> <span class="string">themes/yun</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">main</span></span><br><span class="line">      </span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">set</span> <span class="string">time</span> <span class="string">zone</span></span><br><span class="line">          <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line">            <span class="string">cp</span> <span class="string">/usr/share/zoneinfo/Asia/Shanghai</span> <span class="string">/etc/localtime</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">checkout</span> <span class="string">source</span></span><br><span class="line">          <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">setup</span> <span class="string">nodejs</span></span><br><span class="line">          <span class="attr">uses:</span> <span class="string">actions/setup-node@v1</span></span><br><span class="line">          <span class="attr">with:</span></span><br><span class="line">            <span class="attr">node-version:</span> <span class="string">"14.15.5"</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">setup</span> <span class="string">nodejs</span> <span class="string">environment</span></span><br><span class="line">          <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line">            <span class="string">npm</span> <span class="string">install</span> <span class="string">hexo-cli</span> <span class="string">-g</span></span><br><span class="line">            <span class="string">npm</span> <span class="string">ci</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">generate</span> <span class="string">pages</span></span><br><span class="line">          <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line">            <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">            <span class="string">ls</span> <span class="string">-R</span> <span class="string">public/</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">deploy</span> <span class="string">part</span></span><br><span class="line">          <span class="attr">env:</span> </span><br><span class="line">            <span class="attr">HEXO_DEPLOY_KEY:</span> <span class="string">${{</span> <span class="string">secrets.HEXO_DEPLOY_KEY</span> <span class="string">}}</span></span><br><span class="line">            <span class="attr">GITHUB_USER:</span> <span class="string">wmxzrs</span></span><br><span class="line">            <span class="attr">DEPLOY_REPO:</span> <span class="string">wmxzrs/blog</span></span><br><span class="line">          <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line">             <span class="string">git</span> <span class="string">config</span> <span class="string">--global</span> <span class="string">init.defaultBranch</span> <span class="string">main</span></span><br><span class="line">             <span class="string">cd</span> <span class="string">./public&amp;&amp;</span> <span class="string">git</span> <span class="string">init</span> <span class="string">&amp;&amp;</span> <span class="string">git</span> <span class="string">add</span> <span class="string">.</span></span><br><span class="line">             <span class="string">git</span> <span class="string">config</span> <span class="string">user.name</span> <span class="string">"wmxzrs"</span></span><br><span class="line">             <span class="string">git</span> <span class="string">config</span> <span class="string">user.email</span> <span class="string">"wmxzrs@outlook.com"</span></span><br><span class="line">             <span class="string">git</span> <span class="string">remote</span> <span class="string">add</span> <span class="string">origin</span> <span class="string">https://$GITHUB_USER:$HEXO_DEPLOY_KEY@github.com/wmxzrs/blog.git</span></span><br><span class="line">             <span class="string">git</span> <span class="string">remote</span> <span class="string">-v</span></span><br><span class="line">             <span class="string">git</span> <span class="string">commit</span> <span class="string">-m</span> <span class="string">"GITHUB ACTION AUTO DEPLOY at $(date)"</span></span><br><span class="line">             <span class="string">git</span> <span class="string">push</span> <span class="string">origin</span> <span class="string">--force</span> <span class="string">main:main</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>⨠<code>yml</code>语法就不多叙述了<span class="github-emoji"><span>😄</span><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span>，可以看一下<a target="_blank" rel="noopener" href="https://learnxinyminutes.com/docs/yaml/">Learn X In Y Minutes</a></p>
+<h3 id="rose-流程图"><a href="#rose-流程图" class="headerlink" title=":rose:流程图"></a><span class="github-emoji"><span>🌹</span><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://github.githubassets.com/images/icons/emoji/unicode/1f339.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span>流程图</h3><div id="flowchart-0" class="flow-chart"></div>
+
+<h3 id="eyes-含义和注释"><a href="#eyes-含义和注释" class="headerlink" title=":eyes:含义和注释"></a><span class="github-emoji"><span>👀</span><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://github.githubassets.com/images/icons/emoji/unicode/1f440.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span>含义和注释</h3><p>⨠在配置中:</p>
+<table>
+<thead>
+<tr>
+<th align="center">item</th>
+<th align="center">meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">name</td>
+<td align="center">自定义步骤名称</td>
+</tr>
+<tr>
+<td align="center">on</td>
+<td align="center">触发条件</td>
+</tr>
+<tr>
+<td align="center">run</td>
+<td align="center">运行命令</td>
+</tr>
+<tr>
+<td align="center">`</td>
+<td align="center">`</td>
+</tr>
+<tr>
+<td align="center">uses</td>
+<td align="center">引入，使用</td>
+</tr>
+<tr>
+<td align="center">with</td>
+<td align="center">附带参数</td>
+</tr>
+<tr>
+<td align="center">env</td>
+<td align="center">环境变量</td>
+</tr>
+</tbody></table>
+<p>官方文档看着头痛，这是个人理解，不严谨仅供参阅 <span class="github-emoji"><span>📖</span><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4d6.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></p>
+<hr>
+<h2 id="要注意的地方"><a href="#要注意的地方" class="headerlink" title="要注意的地方"></a>要注意的地方</h2><ul>
+<li><p><code>token</code>的使用</p>
+<ul>
+<li>如果使用<code>access_token</code>推送你的博客的话，要将<code>remote</code>改为<code>https</code>的方式<br><code>git remote set-url origin https:$github_user_name:$github_token@github.com/$github_user_name/$github_repo.git</code></li>
+<li>如果没有<code>remote</code>可以直接添加<br><code>git remote add origin https:$github_user_name:$github_token@github.com/$github_user_name/$github_repo.git</code></li>
+</ul>
+</li>
+<li><p>配置中<code>npm ci</code>会移除<code>node_modules</code>但是不会改变<code>package.json</code>，并按照json文件将所有的包配置好。</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script><textarea id="flowchart-0-code" style="display: none">st=&gt;start: push触发
+op=&gt;inputoutput: 资源checkout
+e=&gt;end: 结束
+op1=&gt;operation: 环境配置
+op2=&gt;operation: auth
+op3=&gt;operation: build&amp;commit
+out=&gt;inputoutput: push(public)
+
+st-&gt;op-&gt;op1-&gt;op2-&gt;op3
+op3-&gt;out
+out-&gt;e</textarea><textarea id="flowchart-0-options" style="display: none">{"scale":1,"line-width":2,"line-length":50,"text-margin":10,"font-size":12}</textarea><script>  var code = document.getElementById("flowchart-0-code").value;  var options = JSON.parse(decodeURIComponent(document.getElementById("flowchart-0-options").value));  var diagram = flowchart.parse(code);  diagram.drawSVG("flowchart-0", options);</script></li>
+</ul>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="header cap theme"><span>接下来阅读</span></section><section class="body fs14"><a id="next" href="/blog/posts/7231e867/">git-with-openssh log<span class="note">较早</span></a><div class="line"></div><a id="prev" href="/blog/posts/4f8e1ea7/">ssh&git<span class="note">较新</span></a></section></div>
+
+
+
+
+
+
+  <div class='related-wrap md reveal' id="comments">
+    <div class='cmt-title cap theme'>
+      快来参与讨论吧
+    </div>
+    <div class='cmt-body valine'>
+      
+
+<div id="valine_container" class="valine_thread"><svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg></div>
+
+    </div>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<p>本站由 <a href="https://vitadaemon.com/blog/">@Tokiame</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1" title="v1.6.1">Stellar</a> 作为主题。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    sitesjs: '/blog/js/plugins/sites.js',
+    friendsjs: '/blog/js/plugins/friends.js',
+  };
+
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/blog/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function getEmojiMaps() {
+    function emoji(path, idx, ext) {
+      return path + "/" + path + "-" + idx + "." + ext;
+    }
+    var emojiMaps = {};
+    for (var i = 1; i <= 54; i++) {
+      emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+    }
+    for (var i = 1; i <= 101; i++) {
+      emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+    }
+    for (var i = 1; i <= 116; i++) {
+      emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+    }
+    for (var i = 1; i <= 125; i++) {
+      emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+    }
+    for (var i = 1; i <= 4; i++) {
+      emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+    }
+    return emojiMaps;
+  }
+  function load_comment(){
+    if(!document.getElementById("valine_container"))return;
+    stellar.loadScript('https://cdn.jsdelivr.net/gh/XuxuGood/simple-blog-cdn@main/js/Valine.min.js', {defer:true}).then(function () {
+      const el = document.getElementById("valine_container");
+      var path = el.getAttribute('comment_id');
+      const placeholder = "";
+      if (!path) {
+        path = decodeURI(window.location.pathname);
+      }
+      var valine = new Valine();
+      valine.init(Object.assign({"js":"https://cdn.jsdelivr.net/gh/XuxuGood/simple-blog-cdn@main/js/Valine.min.js","appId":"A2YLi0bSngc3rOx6sBs97PSj-gzGzoHsz","appKey":"WHLmwcC99B1KYrVSbjIwJhaf","placeholder":null,"requiredFields":["nick","mail"],"enableQQ":true,"recordIP":false,"avatar":"robohash","pageSize":10,"lang":"zh-cn","highlight":true,"mathJax":false,"tagMeta":["博主","小伙伴","访客"],"metaPlaceholder":{"nick":"昵称/QQ号(必填)","mail":"邮箱（必填，完全保密）","link":"网址(https://)"},"master":["6783037F2DF30EAB99F9FC256157D875","FDC44E608F29C569A4FC8652B6F054FC"],"friends":["6783037F2DF30EAB99F9FC256157D875"]}, {
+        el: '#valine_container',
+        path: path,
+        placeholder: placeholder,
+        emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+        emojiMaps: getEmojiMaps(),
+      }));
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+    console.log('DOM fully loaded and parsed');
+    load_comment();
+  });
+
+</script>
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>
