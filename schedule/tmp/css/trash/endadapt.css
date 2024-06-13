@@ -1,0 +1,123 @@
+/* @media screen and (max-width:1024px){
+
+    body{
+        margin: 0;
+        padding: 0;
+    background-color:grey;
+    height: 100vh;
+    box-sizing: border-box;
+    
+    }
+    ul li {
+        
+        list-style: none;
+        position: relative;
+        background: hsla(160,15%,15%,0.5);
+        border-radius: 20px;
+        padding: 20px 10px;
+        margin: 10px 20px;
+        box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);        left:-5%
+    }
+    
+    ul li::before {
+    content: '';
+    position: relative;
+    display: inline-block;
+    left: -12%;
+    top: 0;
+    background-color:rgba(174, 129, 219,.8);
+    
+    width: 20px;
+    height: 20px;
+    border-radius:100% 0 100% 0 ;
+
+    border-style: dotted;
+    
+    }
+   ul li::after {
+       content: '';
+       position: absolute;
+       
+       width: 1px;
+       height: 500px;
+       background-color: black;
+       left: -8%;
+       
+       
+
+   }
+   header {
+    
+    position: sticky;
+    top:5px;
+    left: calc(50% - 40%);
+    background-color: rgba(234, 234, 234,.5);
+    box-shadow: 0 0 10px 5px grey;
+    
+    border-radius: 10px;
+    
+    
+    }
+    header nav{
+        display: flex;
+        justify-content: space-around;
+        
+        align-items: center;
+        
+        margin: 0 auto;
+    }
+    nav dl dd {
+        float: left;
+    }
+    header,dd,a {
+        display: block;
+    
+    }
+    p::after {
+        content: '';
+        position: relative;
+        background-color:black;
+        width: 50px;
+        height: 8px;
+        top: 0;
+        left: 5px;
+        display: inline-block;
+
+    }
+   
+    nav dl dd .a1 a {
+        width: 90px;
+        height: 20px;
+        background-color:rgba(255, 0, 0,.2);
+        margin: 10px auto;
+        text-decoration: none;
+        text-align: center;
+        line-height: 20px;
+    }
+    nav dl dd .a1 {
+        transform: scaleY(0);
+        transform-origin: 50% 0;
+        transition: all 0.4s;
+    }
+    
+    .a2:hover .a1 {
+        transform: scaleY(1);
+    }
+   
+    ul li:hover {
+        background-color:transparent;
+        outline-style:dashed;
+        outline-width: 1px 1px 1px 1px ;
+        outline-color: cyan;
+    }
+    
+   hr {
+       width: 80%;
+       margin: auto;
+   
+   }
+   ::-weblit-scrollbar{
+    width: 0 !important;
+    }
+
+} */
