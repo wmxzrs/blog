@@ -1,0 +1,165 @@
+/* global config */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: grey;
+}  
+
+/* header config */
+.item-header {
+    display: block;
+    text-align: center;
+    position: relative;
+    top: 1em;
+    width: 30em;
+    height: 10em;
+   
+    
+   
+    
+    
+}
+.item-header h1{
+    outline: 1px solid grey;
+    background-color: transparent;
+    padding: 20px 10px;
+    transition: all 0.5s ease;
+}
+/* 桌面端css样式 */
+@media screen and (min-width: 1200px){
+.item-header:hover  h1{
+    transform: translateX(50%);
+    outline: none;
+}
+.item-header h1::before {
+    content: "---";
+   display: none;
+   margin-right: 10px;
+    opacity: 0;
+    transition: all 1s ease-out;
+}
+.item-header:hover h1::before {
+    opacity: 1;
+    display: initial;
+}
+
+.item-header hr {
+    margin-top: 20px;
+    width: 0;
+    opacity:0;
+    transition: all 1.5s ease;
+    display: inline-block;
+}
+.item-header:hover hr {
+    opacity: 1;
+    visibility: visible;
+    width: 100%;
+}
+.item-header hr::after {
+    content: '';
+}
+.item-header:hover hr::after {
+    content:" 窈窕淑女，寤寐求之";
+
+}
+
+
+.item-header i {
+    display:block;
+    /* margin: 20px 5px; */
+    line-height:5em;
+    transition: all 1s ease-in;
+    background-color:pink;
+    box-shadow: 0 0 1px 1px pink;
+    border-radius: 5px;
+    opacity: 0;
+}
+.item-header:hover i {
+    transform: translateX(-100%);
+    opacity: 0.8;
+}
+}
+@media screen and (max-width: 1200px) {
+.item-header i {
+    display: inline-block;
+    margin: 20px auto;
+}
+}
+
+/* content box use attr:value [display:grid] */
+.item-box {
+    position: relative;
+    top: 4em;
+    display: block;
+    margin-top:0;
+    transition: margin-top 1s ease;
+    
+
+}
+.item-box ul {
+
+    display: grid;
+    width: calc(420px + 2em);
+    grid-template-columns: repeat(2,200px) !important; /*嗯，
+    不管怎么设置都不能双列，我还以为是body元素设置的flex布局所影响
+    又或者是父容器宽高？父容器显示属性不对？真的迷
+    很重要的一个属性值*/
+    
+    
+    grid-gap: 2em;
+    place-items: center center;
+    
+    
+   
+
+}
+
+.item-box ul li {
+    outline: 1px solid grey;
+    display: block;
+    list-style: none;
+    width: 200px;
+    height: 150px;
+    text-align: center;
+    line-height: 150px;
+    font-size: 12px;
+    font-weight: bold !important;
+    padding: 5px;
+
+    /* animation */
+    transition: all 0.5s ease-in;
+    background-color: transparent;
+
+
+
+    
+
+}
+
+
+/* header and box establish interaction */
+.item-header:hover~.item-box {
+    margin-top: 10em;
+    
+}
+/* item-box list animation */
+.item-box ul li:hover {
+    background-color: grey ;
+    outline: none;
+    color: white;
+    border-radius: 10px;
+}
+/* hover后list的伪元素 */
+
+/* .item-box ul li:hover::before {
+    position: relative;
+    
+    content: "你好";
+} */

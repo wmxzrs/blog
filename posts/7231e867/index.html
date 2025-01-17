@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <title>git-with-openssh log - Rae's blog</title>
+
+  
+    <meta name="description" content="最近在琢磨内网穿透的搭建，使用闲置设备作为远程服务器。但是在ssh连接的时候出现一些意外——ssh无法连接我的gitee存储库了（好吧，两者并没有什么关系，这个意外只是意外发现的。属于side bug简称SB）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git-with-openssh log">
+<meta property="og:url" content="https://wmxzrs.github.io/posts/7231e867/index.html">
+<meta property="og:site_name" content="Rae&#39;s blog">
+<meta property="og:description" content="最近在琢磨内网穿透的搭建，使用闲置设备作为远程服务器。但是在ssh连接的时候出现一些意外——ssh无法连接我的gitee存储库了（好吧，两者并没有什么关系，这个意外只是意外发现的。属于side bug简称SB）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202110280633293.jpeg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/1635372997088.jpeg">
+<meta property="article:published_time" content="2021-11-07T20:52:07.000Z">
+<meta property="article:modified_time" content="2025-01-17T19:00:06.485Z">
+<meta property="article:author" content="Rae">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202110280633293.jpeg">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/blog/css/main.css">
+
+  
+
+  
+
+  
+
+
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+
+<script type="text/javascript">
+  var OriginTitile = document.title,
+      st;
+  document.addEventListener("visibilitychange", function () {
+      document.hidden ? (document.title = "/(ㄒoㄒ)/~~", clearTimeout(st)) : (document.title =
+          "(●'◡'●)", st = setTimeout(function () {
+              document.title = OriginTitile
+          }, 3e3))
+  })
+
+
+ 
+</script>
+
+
+      
+
+<body>
+  <div%- partial('_partial/main/article/wiki_cover') 
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+
+      
+   
+    
+
+
+<header class="header">
+
+<div class="logo-wrap"><a class="avatar" href="/blog/about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/wmxzrs/img@main/img/1684042354617.jpg" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="/blog/"><div class="main">tokiame</div></a></div>
+<nav class="menu dis-select"><a class="nav-item" href="https://wmxzrs.github.io">主页</a><a class="nav-item active" href="/blog/">文章</a><a class="nav-item" href="/blog/set/">集</a><a class="nav-item" href="/blog/sources/">资源</a><a class="nav-item" href="/blog/schedule/">to-dos</a><a class="nav-item" href="/blog/albums/">albums</a></nav></header>
+
+<div class="widgets">
+
+<div class="widget-wrap single" id="toc"><div class="widget-header cap dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#ssh%E7%8E%AF%E5%A2%83"><span class="toc-text">ssh环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E8%BE%93%E5%87%BA"><span class="toc-text">错误输出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B"><span class="toc-text">过程</span></a></li></ol></div></div></div>
+
+
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/wmxzrs" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.3/social/08a41b181ce68.svg"/></a><a class="social" href="http://music.163.com/playlist?id=6925235544&userid=437298376" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.3/social/3845874.svg"/></a></div></footer>
+
+
+
+    
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/blog/">Rae's blog</a><span class="sep"></span><a class="cap breadcrumb" href="/blog/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/blog/categories/ssh/">ssh</a></div><div id="post-meta">发布于&nbsp;<time datetime="2021-11-07T20:52:07.000Z">2021-11-07</time></div></div>
+
+<article class='content md post reveal'>
+<h1 class="article-title"><span>git-with-openssh log</span></h1>
+<p>今天是立冬，闲暇之余来更新一下。不过，不知不觉已经是深秋的深秋了。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/202110280633293.jpeg" alt="alt"></p>
+<h3 id="ssh环境"><a href="#ssh环境" class="headerlink" title="ssh环境"></a>ssh环境</h3><p>目前装的是Windows11系统，在控制面板、程序和功能中并没有<code>openssh</code>相关的功能可以安装，但是在<code>windows\system32\openssh</code>自带。</p>
+<p>在windows terminal中  <code>ssh -V</code>  查看版本为</p>
+<p><code>OpenSSH_for_Windows_8.1p1, LibreSSL 3.0.2</code></p>
+<p>在Gitbash中查看的版本号是</p>
+<p><code>OpenSSH_8.8p1, OpenSSL 1.1.1l  24 Aug 2021</code></p>
+<p>目前在用<code>scoop</code>作为windows下包管理器。(之后会为scoop写一篇使用心得以及注意事项)<br>用scoop包管理器下载了<code>git-with-ssh</code>,并重新安装了Gitbash<br>安装过程中；其中一项是使用<code>bundled openssh</code>还是自己选择已有openssh组件。这里为了区别scoop安装的git-with-ssh选择windows自带的openssh。</p>
+<h3 id="错误输出"><a href="#错误输出" class="headerlink" title="错误输出"></a>错误输出</h3><p>现在问题是，在windows terminal中可以正常的ssh到gitee仓库</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">C:\Users\tokiame&gt;ssh -vT git@gitee.com</span><br><span class="line">OpenSSH_for_Windows_8.1p1, LibreSSL 3.0.2</span><br><span class="line">debug1: Reading configuration data C:\\Users\\tokiame/.ssh/config</span><br><span class="line">debug1: C:\\Users\\tokiame/.ssh/config line 8: Applying options for gitee.com</span><br><span class="line">debug1: C:\\Users\\tokiame/.ssh/config line 14: Applying options for gitee.com</span><br><span class="line">debug1: Reading configuration data __PROGRAMDATA__\\ssh/ssh_config</span><br><span class="line">debug1: Connecting to gitee.com [180.97.125.228] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file C:\\Users\\tokiame/.ssh/gitee2 type 0</span><br><span class="line">debug1: identity file C:\\Users\\tokiame/.ssh/gitee2-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_for_Windows_8.1</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version ssh-pilot-1.1.1</span><br><span class="line">debug1: no match: ssh-pilot-1.1.1</span><br><span class="line">debug1: Authenticating to gitee.com:22 as 'git'</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br><span class="line">debug1: Server host key: ecdsa-sha2-nistp256 SHA256:FQGC9Kn/eye1W8icdBgrQp+KkGYoFgbVr17bmjey0Wc</span><br><span class="line">debug1: Host 'gitee.com' is known and matches the ECDSA host key.</span><br><span class="line">debug1: Found key in C:\\Users\\tokiame/.ssh/known_hosts:7</span><br><span class="line">debug1: rekey out after 134217728 blocks</span><br><span class="line">debug1: SSH2_MSG_NEWKEYS sent</span><br><span class="line">debug1: expecting SSH2_MSG_NEWKEYS</span><br><span class="line">debug1: SSH2_MSG_NEWKEYS received</span><br><span class="line">debug1: rekey in after 134217728 blocks</span><br><span class="line">debug1: pubkey_prepare: ssh_get_authentication_socket: No such file or directory</span><br><span class="line">debug1: Will attempt key: C:\\Users\\tokiame/.ssh/gitee2 RSA SHA256:rIZHg29jb9LsC0yONv5Yexclgto8mwvc0dTX1S+WABY explicit</span><br><span class="line">debug1: SSH2_MSG_SERVICE_ACCEPT received</span><br><span class="line">debug1: Authentications that can continue: publickey</span><br><span class="line">debug1: Next authentication method: publickey</span><br><span class="line">debug1: Offering public key: C:\\Users\\tokiame/.ssh/gitee2 RSA SHA256:rIZHg29jb9LsC0yONv5Yexclgto8mwvc0dTX1S+WABY explicit</span><br><span class="line">debug1: Server accepts key: C:\\Users\\tokiame/.ssh/gitee2 RSA SHA256:rIZHg29jb9LsC0yONv5Yexclgto8mwvc0dTX1S+WABY explicit</span><br><span class="line">debug1: Authentication succeeded (publickey).</span><br><span class="line">Authenticated to gitee.com ([180.97.125.228]:22).</span><br><span class="line">debug1: channel 0: new [client-session]</span><br><span class="line">debug1: Entering interactive session.</span><br><span class="line">debug1: pledge: network</span><br><span class="line">debug1: client_input_channel_req: channel 0 rtype exit-status reply 0</span><br><span class="line">Hi RaymonWang! You've successfully authenticated, but GITEE.COM does not provide shell access.</span><br><span class="line">debug1: channel 0: free: client-session, nchannels 1</span><br><span class="line">Transferred: sent 3392, received 1708 bytes, in 0.1 seconds</span><br></pre></td></tr></tbody></table></figure>
+
+<p>而在Gitbash中却总是抛出<code>permission denied (publickey)</code></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">ssh -vT git@gitee.com</span><br><span class="line">OpenSSH_8.8p1, OpenSSL 1.1.1l  24 Aug 2021</span><br><span class="line">debug1: Reading configuration data /c/Users/tokiame/.ssh/config</span><br><span class="line">debug1: /c/Users/tokiame/.ssh/config line 8: Applying options for gitee.com</span><br><span class="line">debug1: /c/Users/tokiame/.ssh/config line 14: Applying options for gitee.com</span><br><span class="line">debug1: Reading configuration data /etc/ssh/ssh_config</span><br><span class="line">debug1: Connecting to gitee.com [180.97.125.228] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file /c/Users/tokiame/.ssh/gitee2 type 0</span><br><span class="line">debug1: identity file /c/Users/tokiame/.ssh/gitee2-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_8.8</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version ssh-pilot-1.1.1</span><br><span class="line">debug1: compat_banner: no match: ssh-pilot-1.1.1</span><br><span class="line">debug1: Authenticating to gitee.com:22 as 'git'</span><br><span class="line">debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory</span><br><span class="line">debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br><span class="line">debug1: SSH2_MSG_KEX_ECDH_REPLY received</span><br><span class="line">debug1: Server host key: ecdsa-sha2-nistp256 SHA256:FQGC9Kn/eye1W8icdBgrQp+KkGYoFgbVr17bmjey0Wc</span><br><span class="line">debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory</span><br><span class="line">debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory</span><br><span class="line">debug1: Host 'gitee.com' is known and matches the ECDSA host key.</span><br><span class="line">debug1: Found key in /c/Users/tokiame/.ssh/known_hosts:7</span><br><span class="line">debug1: rekey out after 134217728 blocks</span><br><span class="line">debug1: SSH2_MSG_NEWKEYS sent</span><br><span class="line">debug1: expecting SSH2_MSG_NEWKEYS</span><br><span class="line">debug1: SSH2_MSG_NEWKEYS received</span><br><span class="line">debug1: rekey in after 134217728 blocks</span><br><span class="line">debug1: Will attempt key: /c/Users/tokiame/.ssh/gitee2 RSA SHA256:rIZHg29jb9LsC0yONv5Yexclgto8mwvc0dTX1S+WABY explicit</span><br><span class="line">debug1: SSH2_MSG_SERVICE_ACCEPT received</span><br><span class="line">debug1: Authentications that can continue: publickey</span><br><span class="line">debug1: Next authentication method: publickey</span><br><span class="line">debug1: Offering public key: /c/Users/tokiame/.ssh/gitee2 RSA SHA256:rIZHg29jb9LsC0yONv5Yexclgto8mwvc0dTX1S+WABY explicit</span><br><span class="line">debug1: send_pubkey_test: no mutual signature algorithm</span><br><span class="line">debug1: No more authentication methods to try.</span><br><span class="line">git@gitee.com: Permission denied (publickey).</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><p>猜想是，从下面几个方面着手：</p>
+<ul>
+<li>ssh配置问题</li>
+<li>windows自带openssh和git-with-openssh冲突？</li>
+</ul>
+<p>ssh配置问题上折腾了很久，值得注意的是ssh配置路径<code>~/.ssh/config</code>以及<code>/etc/ssh/ssh_config|sshd_config</code></p>
+<p>下面是我的<code>~/.ssh/config</code>配置：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">Host gitee.com</span><br><span class="line">HostName gitee.com</span><br><span class="line">IdentityFile ~/.ssh/gitee</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">User git</span><br><span class="line"></span><br><span class="line">Host gitee.com</span><br><span class="line">HostName gitee.com</span><br><span class="line">IdentityFile ~/.ssh/gitee2</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">User git</span><br><span class="line"></span><br><span class="line"># this is tested three times for git-with-openssh</span><br><span class="line"></span><br><span class="line">Host github.com</span><br><span class="line">HostName github.com</span><br><span class="line">IdentityFile  ~/.ssh/id_rsa</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">User wmxzrs@outlook.com</span><br><span class="line"></span><br><span class="line">Host wmcrimson</span><br><span class="line">HostName github.com</span><br><span class="line">IdentityFile ~/.ssh/id_desk</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">User git</span><br><span class="line"></span><br><span class="line">Host myphone</span><br><span class="line">HostName  10.19.137.171</span><br><span class="line">IdentityFile ~/.ssh/20211107</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">User root</span><br></pre></td></tr></tbody></table></figure>
+
+<p>折腾配置无果，在网上谷歌相关的帖子和教程</p>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-osc/issues/I35AYM?skip_mobile=true">找到了一篇让我醍醐灌顶</a> 帖子中，已经明确了解决方法。</p>
+<p>原因就是<code>openssh</code>版本问题😥。（这真是太让人头秃了，哭笑不得）</p>
+<p>于是我就去看了<code>openssh</code>官方release</p>
+<figure class="highlight markdown"><table><tbody><tr><td class="code"><pre><span class="line"><span class="section">Future deprecation notice</span></span><br><span class="line"><span class="section">=========================</span></span><br><span class="line"></span><br><span class="line">It is now possible[1] to perform chosen-prefix attacks against the</span><br><span class="line">SHA-1 hash algorithm for less than USD$50K. For this reason, we will</span><br><span class="line">be disabling the "ssh-rsa" public key signature algorithm that depends</span><br><span class="line">on SHA-1 by default in a near-future release.</span><br><span class="line"></span><br><span class="line">This algorithm is unfortunately still used widely despite the</span><br><span class="line">existence of better alternatives, being the only remaining public key</span><br><span class="line">signature algorithm specified by the original SSH RFCs.</span><br><span class="line"></span><br><span class="line">The better alternatives include:</span><br><span class="line"></span><br><span class="line"><span class="bullet"> *</span> The RFC8332 RSA SHA-2 signature algorithms rsa-sha2-256/512. These</span><br><span class="line">   algorithms have the advantage of using the same key type as</span><br><span class="line">   "ssh-rsa" but use the safe SHA-2 hash algorithms. These have been</span><br><span class="line">   supported since OpenSSH 7.2 and are already used by default if the</span><br><span class="line">   client and server support them.</span><br><span class="line"></span><br><span class="line"><span class="bullet"> *</span> The ssh-ed25519 signature algorithm. It has been supported in</span><br><span class="line">   OpenSSH since release 6.5.</span><br><span class="line"></span><br><span class="line"><span class="bullet"> *</span> The RFC5656 ECDSA algorithms: ecdsa-sha2-nistp256/384/521. These</span><br><span class="line">   have been supported by OpenSSH since release 5.7.</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/wmxzrs/img/img/1635372997088.jpeg" alt="alt"></p>
+<p>（so？问题呢就这？官方都弃用了还能说啥……）</p>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="header cap theme"><span>接下来阅读</span></section><section class="body fs14"><a id="next" href="/blog/posts/d0539f6b/">CSS Selector<span class="note">较早</span></a><div class="line"></div><a id="prev" href="/blog/posts/e05fd2da/">Github Action<span class="note">较新</span></a></section></div>
+
+
+
+
+
+
+  <div class='related-wrap md reveal' id="comments">
+    <div class='cmt-title cap theme'>
+      快来参与讨论吧
+    </div>
+    <div class='cmt-body valine'>
+      
+
+<div id="valine_container" class="valine_thread"><svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg></div>
+
+    </div>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<p>本站由 <a href="https://wmxzrs.github.io/blog/">@Rae</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0" title="v1.19.0">Stellar</a> 作为主题。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    sitesjs: '/blog/js/plugins/sites.js',
+    friendsjs: '/blog/js/plugins/friends.js',
+  };
+
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/blog/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function getEmojiMaps() {
+    function emoji(path, idx, ext) {
+      return path + "/" + path + "-" + idx + "." + ext;
+    }
+    var emojiMaps = {};
+    for (var i = 1; i <= 54; i++) {
+      emojiMaps['tieba-' + i] = emoji('tieba', i, 'png');
+    }
+    for (var i = 1; i <= 101; i++) {
+      emojiMaps['qq-' + i] = emoji('qq', i, 'gif');
+    }
+    for (var i = 1; i <= 116; i++) {
+      emojiMaps['aru-' + i] = emoji('aru', i, 'gif');
+    }
+    for (var i = 1; i <= 125; i++) {
+      emojiMaps['twemoji-' + i] = emoji('twemoji', i, 'png');
+    }
+    for (var i = 1; i <= 4; i++) {
+      emojiMaps['weibo-' + i] = emoji('weibo', i, 'png');
+    }
+    return emojiMaps;
+  }
+  function load_comment(){
+    if(!document.getElementById("valine_container"))return;
+    stellar.loadScript('https://cdn.jsdelivr.net/gh/XuxuGood/simple-blog-cdn@main/js/Valine.min.js', {defer:true}).then(function () {
+      const el = document.getElementById("valine_container");
+      var path = el.getAttribute('comment_id');
+      const placeholder = "";
+      if (!path) {
+        path = decodeURI(window.location.pathname);
+      }
+      var valine = new Valine();
+      valine.init(Object.assign({"js":"https://cdn.jsdelivr.net/gh/XuxuGood/simple-blog-cdn@main/js/Valine.min.js","appId":"A2YLi0bSngc3rOx6sBs97PSj-gzGzoHsz","appKey":"WHLmwcC99B1KYrVSbjIwJhaf","placeholder":null,"requiredFields":["nick","mail"],"enableQQ":true,"recordIP":false,"avatar":"robohash","pageSize":10,"lang":"zh-cn","highlight":true,"mathJax":false,"tagMeta":["博主","小伙伴","访客"],"metaPlaceholder":{"nick":"昵称/QQ号(必填)","mail":"邮箱（必填，完全保密）","link":"网址(https://)"},"master":["6783037F2DF30EAB99F9FC256157D875","FDC44E608F29C569A4FC8652B6F054FC"],"friends":["6783037F2DF30EAB99F9FC256157D875"]}, {
+        el: '#valine_container',
+        path: path,
+        placeholder: placeholder,
+        emojiCDN: 'https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/valine/',
+        emojiMaps: getEmojiMaps(),
+      }));
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+    console.log('DOM fully loaded and parsed');
+    load_comment();
+  });
+
+</script>
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>

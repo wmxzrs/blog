@@ -1,0 +1,75 @@
+/* used for new index.html
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.header-container {
+    
+    position: sticky;
+    width: 80%;
+    height: 5rem;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: cyan;
+    color: white;
+    top: 0;
+    background-color: linear-gradient(to bottom, grey, white);
+    border-radius: 10px;
+    box-shadow: 0 0 10px 5px cyan;
+    text-align: center;
+
+
+}
+
+
+
+.footer-container {
+    position: absolute;
+    
+    bottom: 10px;
+    background-color: purple;
+    width: 100%;
+    text-align: center;
+    color: white;
+    
+
+}
+.content-container {
+    position: relative;
+    top: 5rem;
+    
+}
+.content-container .nav-title {
+    
+    padding: 100px;
+    background-color: black;
+    width: 100%;
+    color: highlight;
+    box-shadow:0 0 5px 6px black;
+
+}
+
+.nav-section {
+    margin: 0 auto;  
+    width: 100%;
+    padding: 10px 10px;
+    
+    
+}
+.nav-section .ul-box  {
+    display: flex;
+    justify-content: column;
+    list-style: none;
+    background-color:lightblue;
+    align-items: center;
+   
+}
+
+dd {
+    display: block;
+    
+}
+
+ */
