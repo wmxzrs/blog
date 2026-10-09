@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>time-line for twice</title>
+    <link rel="stylesheet" href="css/link.css">
+	<link rel="stylesheet" href="css/component.css" type="text/css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_2717328_p7edhfsopm8.css" type="text/css">
+	<link rel="stylesheet" href="css/endadapt.css" type="text/css">
+</head>
+<body>
+	<header>
+		<nav>
+			<dl>
+				<dd>
+					<div class="a2">
+					<p><i class="iconfont icon-loufang"></i>A</p>
+					<div class="a1">
+					<a href="javascript:void(0)">1</a>
+					<a href="javascript:void(0)">2</a>
+					<a href="javascript:void(0)">3</a>
+				</div>
+				</div>
+				</dd>
+				<dd>
+					<div class="a2">
+					<p><i class="iconfont icon-fabiao"></i>B</p>
+					<div class="a1">
+					<a href="javascript:void(0)">4</a>
+					<a href="javascript:void(0)">5</a>
+					<a href="javascript:void(0)">6</a>
+					</div>
+					</div>
+				</dd>
+			
+				<dd>
+					<div class="a2">
+					<p><i class="iconfont icon-caogaoxiang"></i>C</p>
+					<div class="a1">
+					<a href="javascript:void(0)">7</a>
+					<a href="javascript:void(0)">8</a>
+					<a href="javascript:void(0)">9</a>
+					</div>
+					</div>
+				</dd>
+			</dl>
+		</nav>
+	</header>
+	<hr />
+    <div class="container">
+        <ul class="timelinelist">
+            <li class="defineli left">Life is a journey to experience to learn and to enjoy.</li>
+            <li class="defineli right">With the friends there are always laughs and shared happy moments, the friends are like 
+                the small drops of water of the morning dew, where the heart is it and freshens up.</li>
+            <li class="defineli left">Life isFaults are thick where love is thin. --Howell</li>
+            <li class="defineli right">Dont listen to what other say about you, lead you own life.</li>
+            <li class="defineli left">Marry in haste, and repent at leisure. --Ray
+            </li>
+            <li class="defineli right">That man is the richest whose pleasure are the cheapest</li>
+        </ul>
+    </div>
+
+
+	
+</body>
+</html>
+<!-- 
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.main-container{
+	position: relative;
+	width: 500px;
+}
+/*creating line for timeline*/
+.main-container::after{
+	content: '';
+	position: absolute;
+	width: 10px;
+	background-color: #FFC0CB;
+	top:0;
+	bottom: 0;
+	left: 50%;
+	margin-left: -3px;
+}
+/*Adjusting box of all content*/
+.text-wrapper{
+	padding: 10px 40px;
+	position: relative;
+	width:51%;
+	box-sizing: border-box;
+	margin: 50px 0;
+}
+.text-wrapper::after{
+	content: '';
+	position: absolute;
+	width: 30px;
+	height: 25px;
+	right: -12px;
+	background-color:#FF69B4;
+	top:15px;
+	border-radius: 50%;
+	z-index: 1;
+}
+/*for left events*/
+.left{
+	left: 0;
+}
+/*for right events*/
+.right{
+	left:50%;
+}
+.right::after{
+	left:-12px;
+}
+/*content box colour padding
+and radius for circular corner*/
+.content{
+	padding: 15px 15px 15px 17px;
+	background-color: #FFC0CB;
+	border-radius: 4px;
+}
+/*setting text property of event heading*/
+.content h3{
+	text-transform: uppercase;
+	font-size: 14px;
+	color: #212121;
+	letter-spacing:1px;
+}
+/*setting text property of event content*/
+.content p{
+	color: #616161;
+	font-weight: 300;
+	font-size: 18px;
+	margin-top: 2px;
+}
+</style>
+</head>
+<body>
+container which will contain our timeline 
+	<div class="main-container">
+		<!-- event 1st of timeline 
+		<div class="text-wrapper left">
+			<!-- all text content of timeline 
+			<div class="content">
+				<h3>one</h3>
+				<p>Some stuff</p>
+			</div>
+		</div>
+		<!-- event 1st of timeline 
+		<div class="text-wrapper right">
+			<!-- all text content of timeline 
+			<div class="content">
+				<h3>two</h3>
+				<p>Some stuff</p>
+			</div>
+		</div>
+		<!-- event 1st of timeline 
+		<div class="text-wrapper left">
+			<!-- all text content of timeline 
+			<div class="content">
+				<h3>three</h3>
+				<p>Some Stuff</p>
+			</div>
+		</div>
+		<!-- event 1st of timeline 
+		<div class="text-wrapper right">
+			<!-- all text content of timeline
+			<div class="content">
+				<h3>four</h3>
+				<p>Some stuff</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+-->
